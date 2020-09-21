@@ -1,5 +1,5 @@
 # Discordapp TokenGrabber
-  - noticed how the code is broken, ically service is down, sometimes works and doesn't, ill work a revamped version when i feel like.
+  - ⚠ Noticed how the code is broken, ically service is down, sometimes works and doesn't, ill work a revamped version when i feel like.
 
 # The program outputs as:
 
